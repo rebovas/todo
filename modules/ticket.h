@@ -17,6 +17,10 @@ class Time
         Time();
         Time(unsigned short int minutes, unsigned short int hours);
         int isEmpty();
+        int setMinutes(unsigned short int minutes);
+        int setHours(unsigned short int hours);
+        int correct();
+        string toString();
 };
 
 class Date
@@ -31,6 +35,10 @@ class Date
         Date(unsigned short int day, unsigned short int month, unsigned short int year);
         int correct();
         int isEmpty();
+        int setDay(unsigned short int day);
+        int setMonth(unsigned short int month);
+        int setYear(unsigned short int year);
+        string toString();
 };
 
 class Ticket
@@ -50,4 +58,9 @@ class Ticket
         int changeProperty(Date date);
         int changeProperty(Time time);        
         int getId();
+        int addDiscription(string partDisctn);
+        int setId(unsigned short int id);
+        Date getDate();
+        Time getTime();
+        string toString();
 };

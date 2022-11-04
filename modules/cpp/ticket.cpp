@@ -196,3 +196,75 @@ int countDayMonth(unsigned short int month, unsigned short int year)
 
     return res;
 };
+
+int Date::setDay(unsigned short int day)
+{
+    this->day = day;
+    return 0;
+};
+
+int Date::setMonth(unsigned short int month)
+{
+    this->month = month;
+    return 0;
+};
+
+int Date::setYear(unsigned short int year)
+{
+    this->year = year;
+    return 0;
+};
+
+int Time::correct()
+{
+    if(this->minutes < 60 || this->hours < 24) return 1;
+    else return 0;
+};
+
+int Time::setMinutes(unsigned short int minutes)
+{
+    this->minutes = minutes;
+    return 0;
+};
+
+int Time::setHours(unsigned short int hours)
+{
+    this->hours = hours;
+    return 0;
+};
+
+Time Ticket::getTime()
+{
+    return this->time;
+}
+
+int Ticket::addDiscription(string partDisctn)
+{
+    this->discription += " " + partDisctn;
+    return 0;
+};
+
+string Time::toString()
+{
+    if(this->isEmpty()) return string();
+
+    return to_string(this->minutes) + ' ' + to_string(this->hours);
+};
+
+string Date::toString()
+{
+    if(this->isEmpty()) return string();
+
+    return to_string(this->day) + ' ' + to_string(this->month) + ' ' + to_string(this->year);
+}
+
+string Ticket::toString()
+{
+    if(this->isEmpty()) return string();
+
+    string ticketStr;
+    
+    ticketStr += to_string(this->id) + ' ' + this->date.toString() + ' ' + this->time.toString() + ' ' + this->discription;
+
+    return ticketStr;
+}
