@@ -33,7 +33,7 @@ class Date
     public:
         Date();
         Date(unsigned short int day, unsigned short int month, unsigned short int year);
-        int correct();
+        int notCorrect();
         int isEmpty();
         int setDay(unsigned short int day);
         int setMonth(unsigned short int month);
@@ -54,13 +54,10 @@ class Ticket
         Ticket();
         Ticket(unsigned short int id, Time time, Date date, string discription);
         int isEmpty();
-        int changeProperty(string newDiscription);
-        int changeProperty(Date date);
-        int changeProperty(Time time);        
-        int getId();
+        unsigned short int getId();
         int addDiscription(string partDisctn);
-        int setId(unsigned short int id);
-        Date getDate();
-        Time getTime();
+        int setId(unsigned short int &id);
+        Date& getDate();
+        Time& getTime();
         string toString();
 };

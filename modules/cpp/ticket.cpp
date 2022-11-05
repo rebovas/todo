@@ -48,7 +48,7 @@ Date::Date(unsigned short int day, unsigned short int month, unsigned short int 
     this->month = month;
     this->year = year;
 
-    if(!this->correct())
+    if(this->notCorrect())
     {
         *this = Date();
     }
@@ -57,8 +57,9 @@ Date::Date(unsigned short int day, unsigned short int month, unsigned short int 
 // Code 0 - correct date
 // Error code 1 - out of date 
 // Error code 2 - incorrect amount of days and less than 32
-int Date::correct()
+int Date::notCorrect()
 {
+
     time_t now = time(0); 
     tm *ltm = localtime(&now);
 
@@ -70,7 +71,7 @@ int Date::correct()
     {
         return 1;
     }
-    else if(this->year < 1970 + ltm->tm_year)
+    else if(this->year < 1900 + ltm->tm_year)
     {
         return 1;
     }
@@ -125,50 +126,7 @@ int Ticket::isEmpty()
     else return 0;
 };
 
-int Ticket::changeProperty(string newDiscription)
-{
-    // If ticket empty, don't change discription
-    if(newDiscription.empty() || this->isEmpty())
-    {
-        return 1;
-    }
-    else 
-    {
-        this->discription = newDiscription;
-    }
-
-    return 0;
-};
-
-int Ticket::changeProperty(Date date)
-{
-    if(date.isEmpty() || this->isEmpty())
-    {
-        return 1;
-    }
-    else
-    {
-        this->date = date;
-    }
-
-    return 0;
-};
-
-int Ticket::changeProperty(Time time)
-{
-    if(time.isEmpty() || this->isEmpty())
-    {
-        return 1;
-    }
-    else 
-    {
-        this->time = time;
-    }
-
-    return 0;
-};
-
-int Ticket::getId()
+unsigned short int Ticket::getId()
 {
     if(this->isEmpty())
     {
@@ -220,7 +178,6 @@ int Time::correct()
     if(this->minutes < 60 || this->hours < 24) return 1;
     else return 0;
 };
-
 int Time::setMinutes(unsigned short int minutes)
 {
     this->minutes = minutes;
@@ -233,14 +190,14 @@ int Time::setHours(unsigned short int hours)
     return 0;
 };
 
-Time Ticket::getTime()
+Time& Ticket::getTime()
 {
     return this->time;
 }
 
 int Ticket::addDiscription(string partDisctn)
 {
-    this->discription += " " + partDisctn;
+    this->discription += (partDisctn + ' ');
     return 0;
 };
 
@@ -268,3 +225,14 @@ string Ticket::toString()
 
     return ticketStr;
 }
+
+Date& Ticket::getDate()
+{
+    return this->date;
+};
+
+int Ticket::setId(unsigned short int &id)
+{
+    this->id = id;
+    return 0;
+};

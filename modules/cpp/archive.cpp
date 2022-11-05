@@ -28,6 +28,7 @@ int Archive::addTicket(Ticket ticket)
 {
     if(!ticket.isEmpty())
     {
+
         Ticket *newTickets = new Ticket[++this->countTickets]();
 
         for(int i = 0; i < this->countTickets - 1; i++)
@@ -83,25 +84,27 @@ int Archive::delTicket(unsigned short int id)
 
 Archive::Archive(string filename)
 {
-   this->countTickets = 0;
+    *this = Archive();
 
    ifstream file(filename);  
    string line, word;
-   int countTickets;
 
    if(file.is_open())
    {
         this->filename = filename;
 
-        for(file >> line; !file.eof(); file >> line)
+        for(getline(file, line); !file.eof(); getline(file, line))
         {
-            Ticket ticket = Ticket();
+            unsigned short int id, day, month, year, minutes, hours;
+            string disc;
             strstream stream;
-            
             stream << line;
-            if(stream >> word && stream.good())
+
+            stream >> word;
+
+            if(stream.good())
             {
-                ticket.setId(stoi(word));                                
+                id = stoi(word);                
             }
 
             for(int i = 0; stream.good() && i < 3; i++)
@@ -110,9 +113,9 @@ Archive::Archive(string filename)
 
                 switch(i)
                 {
-                    case 0: ticket.getDate().setDay(stoi(word)); break;
-                    case 1: ticket.getDate().setMonth(stoi(word)); break;
-                    case 2: ticket.getDate().setYear(stoi(word)); break;
+                    case 0: day = stoi(word); break;
+                    case 1: month = stoi(word); break;
+                    case 2: year = stoi(word); break;
                 }
             }
 
@@ -122,26 +125,23 @@ Archive::Archive(string filename)
 
                 switch(i)
                 {
-                    case 0: ticket.getTime().setMinutes(stoi(word)); break;
-                    case 1: ticket.getTime().setHours(stoi(word)); break;
+                    case 0: minutes = stoi(word); break;
+                    case 1: hours = stoi(word); break;
                 }
             }
 
             for(stream >> word; stream.good(); stream >> word)
             {
-                ticket.addDiscription(word); 
+                disc += word + ' ';
             }
 
-            if(ticket.isEmpty() || !ticket.getDate().correct() || !ticket.getTime().correct())
+            Ticket ticket = Ticket(id, Time(minutes, hours), Date(day, month, year), disc);
+
+            if(!ticket.isEmpty() || !ticket.getDate().notCorrect() || ticket.getTime().correct() || ticket.getId() != EMPTY)
             {
-                *this = Archive();
-                return;
+                this->addTicket(ticket);
             }
-
-            countTickets++;
         }
-
-        this->countTickets = countTickets;
         file.close();
    }
    else *this = Archive();
@@ -149,7 +149,7 @@ Archive::Archive(string filename)
 
 int Archive::isEmpty()
 {
-   if (this->countTickets == 0 || this->tickets == nullptr || this->filename.empty()) return 1;
+   if (this->countTickets == 0 || this->tickets->isEmpty() || this->filename.empty()) return 1;
    else return 0;
 };
 
@@ -157,7 +157,7 @@ int Archive::writeTickets()
 {
    if(this->isEmpty()) return 1;
 
-   ofstream file(this->filename);
+   ofstream file(this->filename, ios_base::in | ios_base::trunc);
 
    if(!file.is_open()) return 2;
 

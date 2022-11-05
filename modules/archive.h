@@ -1,6 +1,7 @@
 #include "ticket.h"
 #include <fstream>
 #include <strstream>
+#include <iostream>
 
 using namespace std;
 
