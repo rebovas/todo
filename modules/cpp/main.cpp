@@ -8,6 +8,8 @@ int main()
 
     cout << arch.isEmpty() << endl;
 
+    cout << arch.delTicket(2) << endl;
+
     arch.writeTickets();
     
 }

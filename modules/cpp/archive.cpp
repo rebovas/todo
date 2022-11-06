@@ -28,6 +28,10 @@ int Archive::addTicket(Ticket ticket)
 {
     if(!ticket.isEmpty())
     {
+        for(int i = 0; i < this->countTickets; i++)
+        {
+            if(this->tickets[i].getId() == ticket.getId()) return 1;
+        }
 
         Ticket *newTickets = new Ticket[++this->countTickets]();
 
@@ -37,7 +41,11 @@ int Archive::addTicket(Ticket ticket)
         }
         newTickets[this->countTickets - 1] = ticket;
 
-        delete this->tickets;
+        if(this->countTickets - 1 == 0)
+        {
+            delete this->tickets;
+        }
+        else delete[] this->tickets;
         this->tickets = newTickets;
 
         return 0;
@@ -75,8 +83,11 @@ int Archive::delTicket(unsigned short int id)
         newTickets[i] = this->tickets[i];
     }
 
-    delete this->tickets;
-
+    if(this->countTickets + 1 == 1)
+    {
+        delete this->tickets;
+    }
+    else delete[] this->tickets;
     this->tickets = newTickets;
 
     return 0;

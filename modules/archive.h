@@ -1,3 +1,4 @@
+#pragma once
 #include "ticket.h"
 #include <fstream>
 #include <strstream>
