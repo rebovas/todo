@@ -1,2 +1,5 @@
 bin/
+modules/*.swp
+modules/cpp/*.swp
+tickets/*.swp
 tickets/

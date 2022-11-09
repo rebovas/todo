@@ -3,7 +3,7 @@
 
 Archive::Archive()
 {
-    this->tickets = new Ticket();
+    this->tickets = nullptr;
     this->countTickets = 0;
     this->filename = string();
 };
@@ -17,23 +17,18 @@ Archive::Archive(Ticket ticket)
     }
     else
     {
-        this->tickets = new Ticket();
-        this->countTickets = 0;
+        *this = Archive();
     }
-
-    this->filename = string();
 };
 
 int Archive::addTicket(Ticket ticket)
 {
     if(!ticket.isEmpty())
     {
-        for(int i = 0; i < this->countTickets; i++)
-        {
-            if(this->tickets[i].getId() == ticket.getId()) return 1;
-        }
+        if(this->sameIds(ticket.getId()) != -1) return 1; 
 
         Ticket *newTickets = new Ticket[++this->countTickets]();
+        if(this->countTickets == 1) newTickets = new Ticket();
 
         for(int i = 0; i < this->countTickets - 1; i++)
         {
@@ -41,11 +36,12 @@ int Archive::addTicket(Ticket ticket)
         }
         newTickets[this->countTickets - 1] = ticket;
 
-        if(this->countTickets - 1 == 0)
+        if(this->countTickets == 2)
         {
             delete this->tickets;
         }
-        else delete[] this->tickets;
+        else if(this->countTickets > 2) delete[] this->tickets;
+        
         this->tickets = newTickets;
 
         return 0;
@@ -58,7 +54,9 @@ int Archive::addTicket(Ticket ticket)
 
 int Archive::delTicket(unsigned short int id)
 {
-    int flag = 1, foundIndx; 
+    if(this->countTickets == 0) return 1;
+
+    int flag = 1, foundIndx,  indx = 0;
 
     for(int i = 0; i < this->countTickets && flag; i++)
     {
@@ -69,25 +67,31 @@ int Archive::delTicket(unsigned short int id)
         }
     }
 
-    if(flag) return -1;
+    if(flag) return 1;
 
     Ticket *newTickets = new Ticket[--this->countTickets]();
+    if(this->countTickets == 1) newTickets = new Ticket();
+    else if(this->countTickets == 0) newTickets = nullptr;
 
     for(int i = 0; i < foundIndx; i++)
     {
-        newTickets[i] = this->tickets[i];                                                        
+        newTickets[indx++] = this->tickets[i];
     }
 
-    for(int i = foundIndx + 1; i < this->countTickets; i++)
+    for(int i = foundIndx + 1; i <= this->countTickets; i++)
     {
-        newTickets[i] = this->tickets[i];
+        newTickets[indx++] = this->tickets[i];
     }
 
-    if(this->countTickets + 1 == 1)
+    if(this->countTickets == 0)
     {
         delete this->tickets;
     }
-    else delete[] this->tickets;
+    else if(this->countTickets > 0)
+    {
+        delete[] this->tickets;
+    }
+
     this->tickets = newTickets;
 
     return 0;
@@ -160,17 +164,15 @@ Archive::Archive(string filename)
 
 int Archive::isEmpty()
 {
-   if (this->countTickets == 0 || this->tickets->isEmpty() || this->filename.empty()) return 1;
+   if (this->countTickets == 0 || this->tickets == nullptr || this->filename.empty()) return 1;
    else return 0;
 };
 
 int Archive::writeTickets()
 {
-   if(this->isEmpty()) return 1;
-
    ofstream file(this->filename, ios_base::in | ios_base::trunc);
 
-   if(!file.is_open()) return 2;
+   if(!file.is_open()) return 1;
 
    for(int i = 0; i < this->countTickets; i++)
    {
@@ -181,4 +183,57 @@ int Archive::writeTickets()
    file.close();
 
    return 0;
+};
+
+int Archive::update() // Now delete tickets only with those dates that less the current
+                      // Need will upgrade this method
+{
+    time_t now = time(0); 
+    tm *ltm = localtime(&now);
+
+    if(ltm == NULL) return 1;
+
+    Date currDate = Date(ltm->tm_mday, ltm->tm_mon + 1, 1900 + ltm->tm_year);
+    Time currTime = Time(ltm->tm_min, ltm->tm_hour);
+
+    for(int i = 0; i < this->countTickets; i++) // Delete same id's
+    {
+        if(this->tickets[i].isEmpty()) return 1;
+        else
+        {
+            if((this->tickets[i].getDate() < currDate) ||
+             (this->tickets[i].getDate() == currDate && this->tickets[i].getTime() < currTime))
+            {
+                this->delTicket(this->tickets[i].getId()); 
+                i--;
+            }
+        }
+    }
+
+    return 0;
+};
+
+int Archive::sameIds(unsigned short int id)
+{
+    int indx = -1;
+
+    for(int i = 0; i < this->countTickets; i++)
+    {
+        if(this->tickets[i].getId() == id) 
+        {
+            indx = i;
+        }
+    }
+
+    return indx;
+};
+
+unsigned short int Archive::generateId()
+{
+    for(unsigned short int resId = 1; resId < EMPTY; resId++)
+    {
+        if(this->sameIds(resId) == -1) return resId;        
+    }
+
+    return 0;
 };

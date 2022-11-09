@@ -14,7 +14,7 @@ Time::Time()
 
 Time::Time(unsigned short int minutes, unsigned short int hours)
 {
-    if(hours > 24 || minutes > 59)
+    if(hours > 23 || minutes > 59)
     {
         *this = Time();
     }
@@ -62,6 +62,8 @@ int Date::notCorrect()
 
     time_t now = time(0); 
     tm *ltm = localtime(&now);
+
+    if(ltm == NULL) return 3;
 
     if(this->month == 0 || this->month > 12)
     {
@@ -235,4 +237,62 @@ int Ticket::setId(unsigned short int &id)
 {
     this->id = id;
     return 0;
+};
+
+bool Date::operator<(const Date& dateR)
+{
+    Date dateCheck = Date(dateR.day, dateR.month, dateR.year);
+    if(this->isEmpty() || dateCheck.isEmpty()) return false;
+
+    if(this->year < dateR.year)
+    {
+        return true;
+    }
+    else if(this->year == dateR.year)
+    {
+        if(this->month < dateR.month)
+        {
+            return true;
+        }
+        else if(this->month == dateR.month)
+        {
+            if(this->day < dateR.day)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
+bool Time::operator<(const Time& timeR)
+{
+    Time timeCheck = Time(timeR.minutes, timeR.hours);
+    if(this->isEmpty() || timeCheck.isEmpty()) return false;
+
+    if(this->hours < timeR.hours)
+    {
+        return true;
+    }
+    else if(this->hours == timeR.hours)
+    {
+        if(this->minutes < timeR.minutes)
+        {
+            return true; 
+        }
+    }
+
+    return false;
+};
+
+bool Date::operator==(const Date& dateR)
+{
+    Date dateCheck = Date(dateR.day, dateR.month, dateR.year);
+    if(this->isEmpty() || dateCheck.isEmpty()) return false;
+
+    if(this->year == dateR.year && this->month == dateR.month && this->day == dateR.day)
+    {
+        return true; 
+    }
+    else return false;
 };

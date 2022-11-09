@@ -25,4 +25,8 @@ class Archive
         int delTicket(unsigned short int id);
         int sortTickets(sortBy kindSort);
         int isEmpty();
+        int update();   // Delete old and same tickets
+        int sameIds(unsigned short int id);  // Return index of last same ticket, otherwise return -1
+        unsigned short int generateId();    // Generate special identificator for ticket
+                                            // Return 0 if fail
 };

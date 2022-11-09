@@ -22,6 +22,7 @@ class Time
         int setHours(unsigned short int hours);
         int correct();
         string toString();
+        bool operator<(const Time& timeR);
 };
 
 class Date
@@ -40,6 +41,8 @@ class Date
         int setMonth(unsigned short int month);
         int setYear(unsigned short int year);
         string toString();
+        bool operator<(const Date& dateR);
+        bool operator==(const Date& dateR);
 };
 
 class Ticket
