@@ -145,7 +145,7 @@ Archive::Archive(string filename)
                 }
             }
 
-            for(stream >> word; stream.good(); stream >> word)
+            for(stream >> word; stream.good() || !stream.fail(); stream >> word)
             {
                 disc += word + ' ';
             }
@@ -236,4 +236,32 @@ unsigned short int Archive::generateId()
     }
 
     return 0;
+};
+
+void Archive::outputTickets()
+{
+    if(this->countTickets == 0)
+    {
+        cout << "Empty" << endl;
+        return;
+    }
+
+    for(int i = 0; i < this->countTickets; i++)
+    {
+        cout << this->tickets[i].toString() << endl;                        
+    }
+};
+
+int Archive::outputTicket(unsigned short int id)
+{
+    for(int i = 0; i < this->countTickets; i++)
+    {
+        if(this->tickets[i].getId() == id)
+        {
+            cout << tickets[i].toString() << endl;
+            return 0;
+        }
+    }
+    cout << "Empty" << endl;
+    return 1;
 };

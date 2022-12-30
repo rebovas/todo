@@ -6,8 +6,8 @@
 
 using namespace std;
 
-// d - date, t - time
-enum sortBy {d, t};
+// d - date, t - time, i - id
+enum sortBy {d, t, dt, i};
 
 class Archive
 {
@@ -20,6 +20,8 @@ class Archive
         Archive();
         Archive(Ticket ticket);
         Archive(string filename);
+        int outputTicket(unsigned short int id);
+        void outputTickets();
         int writeTickets();
         int addTicket(Ticket ticket);
         int delTicket(unsigned short int id);
