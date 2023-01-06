@@ -12,7 +12,7 @@ Archive::Archive(Ticket ticket)
 {
     if(!ticket.isEmpty())
     {
-        *this->tickets = ticket; 
+        this->tickets = new Ticket(ticket); 
         this->countTickets = 1;
     }
     else
@@ -25,6 +25,10 @@ int Archive::addTicket(Ticket ticket)
 {
     if(!ticket.isEmpty())
     {
+        Archive arch = Archive(ticket);
+        arch.update();
+        if(arch.countTickets == 0) return 2;
+
         if(this->sameIds(ticket.getId()) != -1) return 1; 
 
         Ticket *newTickets = new Ticket[++this->countTickets]();
@@ -238,7 +242,7 @@ unsigned short int Archive::generateId()
     return 0;
 };
 
-void Archive::outputTickets()
+void Archive::outputTickets(unsigned short int specCount)
 {
     if(this->countTickets == 0)
     {
@@ -246,7 +250,7 @@ void Archive::outputTickets()
         return;
     }
 
-    for(int i = 0; i < this->countTickets; i++)
+    for(int i = 0; i < this->countTickets && i < specCount; i++)
     {
         cout << this->tickets[i].toString() << endl;                        
     }
@@ -265,3 +269,95 @@ int Archive::outputTicket(unsigned short int id)
     cout << "Empty" << endl;
     return 1;
 };
+
+int Archive::sort(string kindSort)
+{
+   if(strcasecmp(kindSort.c_str(), "d") == 0)
+   {
+       this->sortDate();
+       return 0;
+   }
+   else if(strcasecmp(kindSort.c_str(), "t") == 0)
+   {
+        this->sortTime();
+        return 0;
+   }
+   else if(strcasecmp(kindSort.c_str(), "dt") == 0 || strcasecmp(kindSort.c_str(), "td") == 0)
+   {
+        this->sortDateTime();
+        return 0;
+   }
+
+   return 1;
+};
+
+void Archive::sortDate()
+{
+    for(int i = 0; i < this->countTickets; i++)
+    {
+        for(int j = 0; j < this->countTickets - 1; j++)
+        {
+            if(this->tickets[j + 1].getDate() < this->tickets[j].getDate())
+            {
+                Ticket saveTicket = this->tickets[j];
+
+                this->tickets[j] = this->tickets[j + 1];
+                this->tickets[j + 1] = saveTicket;
+            }
+        }
+    }
+}
+
+void Archive::sortTime()
+{
+    for(int i = 0; i < this->countTickets; i++)
+    {
+        for(int j = 0; j < this->countTickets - 1; j++)
+        {
+            if(this->tickets[j + 1].getTime() < this->tickets[j].getTime())
+            {
+                Ticket saveTicket = this->tickets[j];
+
+                this->tickets[j] = this->tickets[j + 1];
+                this->tickets[j + 1] = saveTicket;
+            }
+        }
+    }
+}
+
+void Archive::sortId()
+{
+    for(int i = 0; i < this->countTickets; i++)
+    {
+        for(int j = 0; j < this->countTickets - 1; j++)
+        {
+            if(this->tickets[j + 1].getId() < this->tickets[j].getId())
+            {
+                Ticket saveTicket = this->tickets[j];
+
+                this->tickets[j] = this->tickets[j + 1];
+                this->tickets[j + 1] = saveTicket;
+            }
+        }
+    }
+}
+
+void Archive::sortDateTime()
+{
+    for(int i = 0; i < this->countTickets; i++)
+    {
+        for(int j = 0; j < this->countTickets - 1; j++)
+        {
+            if(this->tickets[j + 1].getDate() < this->tickets[j].getDate()
+                || (this->tickets[j].getDate() == this->tickets[j + 1].getDate()
+                    && this->tickets[j + 1].getTime() < this->tickets[j].getTime()))
+            {
+                Ticket saveTicket = this->tickets[j];
+
+                this->tickets[j] = this->tickets[j + 1];
+                this->tickets[j + 1] = saveTicket;
+            }
+        }
+    }
+}
+

@@ -13,6 +13,7 @@ Command::Command(char *argv[], int args)
     };
     
     this->countArgs = args;
+    this->executed = false;
 }
 
 string Command::getArg()
@@ -45,12 +46,19 @@ int Command::execute(string command, Archive *archive)
 {
     cmd saveCommand;
 
-    if(command == string()) return 1;
+    if(command == string() && this->executed == false) 
+    {
+        cout << "Command not specified" << endl;
+        return 1;
+    }
+    else if(command == string()) return 1;
+
     for(int i = 0; i < this->amountCmds; i++)
     {
         if(this->commands[i].isSame(command))
         {
             this->runExecution(commands[i], archive);
+            this->executed = true;
             return 0;
         }
     }
@@ -73,15 +81,19 @@ int Command::runExecution(cmd command, Archive *archive)
         cin.ignore();
         getline(cin, discription);
         Ticket tick = Ticket(archive->generateId(), Time(minutes, hours), Date(day, month, year), discription);
-        cout << "Input task: "<< tick.toString() << endl;
-        int result = archive->addTicket(Ticket(archive->generateId(), Time(minutes, hours), Date(day, month, year), discription)); 
-        if(result == 1)
+        int result = archive->addTicket(tick); 
+        if(result > 0)
         {
-            cout << "Task isn't added" << endl;
+            switch(result)
+            {
+                case 1: cout << "Badly fill task" << endl; break;
+                case 2: cout << "Badly date or time" << endl; break;
+            }
             return 1;
         }
         else
         {
+            cout << "Input task: "<< tick.toString() << endl;
             cout << "Task added" << endl;
             archive->writeTickets();
             return 0;
@@ -99,7 +111,7 @@ int Command::runExecution(cmd command, Archive *archive)
             cout << "Delete this task? [yes, no]: ";
             string response;
             cin >> response;
-            if(strcasecmp(response.c_str(), "yes") == 0)
+            if(strcasecmp(response.c_str(), "yes") == 0 || strcasecmp(response.c_str(), "y") == 0)
             {
                 archive->delTicket(searchId); 
                 archive->writeTickets();
@@ -110,7 +122,39 @@ int Command::runExecution(cmd command, Archive *archive)
     }
     else if(command.shortName == "-o")
     {
+        archive->sort("dt");
         archive->outputTickets();
     }
+    else if(command.shortName == "-u")
+    {
+        int result = archive->update();
+
+        if(result == 0)
+        {
+            cout << "To do list succesful update" << endl;
+        }
+        else cout << "To do list not update" << endl;
+    }
+    else if(command.shortName == "-f")
+    {
+        archive->sort("dt");
+        unsigned short int countOutputTickets;
+        cout << "Enter count of output tickets: ";
+        cin >> countOutputTickets;
+        archive->outputTickets(countOutputTickets);
+    }
+    else if(command.shortName == "-s")
+    {
+        string typeSort;
+
+        cout << "Enter type of sort tasks [d - for date, t - time, i - id, dt - and date and time]: ";
+        cin >> typeSort;
+
+        int result = archive->sort(typeSort);        
+
+        if(result == 1) cout << "Wrong type sort specified" << endl;
+        else cout << "Sort executed" << endl;
+    }
+
     return 0;
 };

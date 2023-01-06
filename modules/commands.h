@@ -1,6 +1,5 @@
 #pragma once
 #include "archive.h"
-#include <cstring>
 
 struct cmd
 {
@@ -12,17 +11,21 @@ struct cmd
 class Command
 {
     private:
-        const static int amountCmds = 3;
+        const static int amountCmds = 6;
         string *args;
         unsigned short int countArgs;
         const cmd commands[amountCmds] = {
                                             {"-a", "--add"},
                                             {"-d", "--delete"}, 
-                                            {"-o", "--output"}
+                                            {"-o", "--output"},
+                                            {"-f", "--first"},
+                                            {"-u", "--update"},
+                                            {"-s", "--sort"}
                                         };
-        int runExecution(cmd command, Archive *archive);
+        bool executed;
 
     public:
+        int runExecution(cmd command, Archive *archive);
         Command(char *argv[], int args);
         string getArg();
         int execute(string command, Archive *archive);

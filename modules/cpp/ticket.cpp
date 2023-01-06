@@ -1,8 +1,6 @@
 #include "../ticket.h"
 
 
-int countDayMonth(unsigned short int month, unsigned short int year);
-
 
 // Empty time and date don't using in processing. Need recreate type with parametrs or use method.
 // Just create an empty Time
@@ -46,7 +44,8 @@ Date::Date(unsigned short int day, unsigned short int month, unsigned short int 
 {
     this->day = day;
     this->month = month;
-    this->year = year;
+    if(year < 100) this->year = 2000 + year;
+    else this->year = year;
 
     if(this->notCorrect())
     {
@@ -105,7 +104,6 @@ Ticket::Ticket()
 
 Ticket::Ticket(unsigned short int id, Time time, Date date, string discription)
 {
-
     if(time.isEmpty() || date.isEmpty() || discription.empty() || id == EMPTY)
     {
         *this = Ticket();
@@ -140,7 +138,7 @@ unsigned short int Ticket::getId()
     }
 }
 
-int isBissextile(unsigned short int year)
+int Date::isBissextile(unsigned short int year)
 {
     int res = (1 - ((year % 4) + 2) % ((year % 4) + 1));
     res *= ((year % 100) + 2) % ((year % 100) + 1);
@@ -149,7 +147,7 @@ int isBissextile(unsigned short int year)
     return res;
 };
 
-int countDayMonth(unsigned short int month, unsigned short int year)
+int Date::countDayMonth(unsigned short int month, unsigned short int year)
 {
     int res = 28 + ((0x3bbeecc >> (month * 2)) & 3);
     if(isBissextile(year)) res += !((2 - month) / 1); 

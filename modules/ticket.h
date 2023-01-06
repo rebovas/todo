@@ -43,6 +43,9 @@ class Date
         string toString();
         bool operator<(const Date& dateR);
         bool operator==(const Date& dateR);
+        int isBissextile(unsigned short int year);
+        int countDayMonth(unsigned short int month, unsigned short int year);
+
 };
 
 class Ticket
